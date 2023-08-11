@@ -78,7 +78,5 @@ public class LesmStatusMonitorApplication implements CommandLineRunner {
 		
 		
 		
-		
-
 }
 }
