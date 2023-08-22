@@ -17,29 +17,31 @@ import ls.lesm.repository.Sub_ProfitRepository;
 
 @Service
 @Transactional
-public class ManagerCalculation {
-	Long total = 0l;
+public class LeadCalculation {
 
+	Long total = 0l;
 
 	@Autowired
 	MasterEmployeeDetailsRepository masterEmployeeDetailsRepository;
 
+	
 	@Autowired
 	InternalExpensesRepository internalExpensesrepo;
 
 	@Autowired
 	Sub_ProfitRepository sub_ProfitRepository;
-
-	@Autowired
-	LeadCalculation lc;
 	
 	  @Autowired
 	    CalculationsUptoDate bc;
 
-	public synchronized Double manager_cal(int ManagerEmployeeId, LocalDate fromDate, LocalDate toDate) {
+	public  Double lead_cal(int leademployeeid, LocalDate fromDate, LocalDate toDate) {
 
-		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository
-				.findBymasterEmployeeDetails_Id(ManagerEmployeeId);
+		// masterEmployeeDetailsRepository.findById(leademployeeid);
+
+		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository.findBymasterEmployeeDetails_Id(leademployeeid);
+
+		// List<MasterEmployeeDetails>
+		// ls=masterEmployeeDetailsRepository.findBymasterEmployeeDetailsId(leademployeeid);
 
 		Double profit_or_loss = 0.0;
 		Double sub_profit = 0.0;
@@ -48,51 +50,50 @@ public class ManagerCalculation {
 
 			for (MasterEmployeeDetails Employeeid : ls) {
 
-				System.out.println(Employeeid);
+			//	System.out.println("Employees:"+Employeeid.getEmpId());
 
-//			Optional<MasterEmployeeDetails> id = masterEmployeeDetailsRepository.findById(Employeeid.getEmpId());
-//
-//			MasterEmployeeDetails epm = null;
-//
-//			if (id.isPresent()) {
-//				epm = id.get();
-//			}
 
-				// int a = Employeeid .getEmpId();
 
-				
+				int a = Employeeid.getEmpId();
 
-				profit_or_loss = Math.ceil (lc.lead_cal(Employeeid.getEmpId(), fromDate, toDate));
+			
+
+				profit_or_loss = Math.ceil (bc.lesmCalculations(a, fromDate, toDate));
 
 			
 				sub_profit += profit_or_loss;
 
 			}
-
 		}
 
-		Optional<InternalExpenses> i = internalExpensesrepo.findBymasterEmployeeDetails_Id(ManagerEmployeeId);
+		Double Total_profit_or_loss = sub_profit + bc.lesmCalculations (leademployeeid, fromDate, toDate);
+
+		Optional<InternalExpenses> i = internalExpensesrepo.findBymasterEmployeeDetails_Id(leademployeeid);
 
 		InternalExpenses o = null;
+		
 		if (i.isPresent()) {
 			o = i.get();
 
 		} else {
 			o = internalExpensesrepo
-					.save(new InternalExpenses(masterEmployeeDetailsRepository.findById(ManagerEmployeeId).get()));
+					.save(new InternalExpenses(masterEmployeeDetailsRepository.findById(leademployeeid).get()));
 
 		}
+		
 
-		Double Total_profit_or_loss = sub_profit + bc.lesmCalculations(ManagerEmployeeId, fromDate, toDate);
+		
+		
+		
 
 		o.setProfitOrLoss(Math.ceil(Total_profit_or_loss));
 
 		//
 
-		Optional<MasterEmployeeDetails> me = masterEmployeeDetailsRepository.findById(ManagerEmployeeId);
+		Optional<MasterEmployeeDetails> me = masterEmployeeDetailsRepository.findById(leademployeeid);
 		MasterEmployeeDetails med = me.get();
 
-		Optional<Sub_Profit> s_p = sub_ProfitRepository.findBymasterEmployeeDetails_Id(ManagerEmployeeId);
+		Optional<Sub_Profit> s_p = sub_ProfitRepository.findBymasterEmployeeDetails_Id(leademployeeid);
 
 		if (s_p.isPresent()) {
 			Sub_Profit s = s_p.get();
@@ -107,14 +108,17 @@ public class ManagerCalculation {
 
 			Sub_Profit sp = new Sub_Profit(Math.ceil(sub_profit), med);
 
-		
+		//	System.out.println(sp);
 
 			sub_ProfitRepository.save(sp);
 
 		}
 		return Total_profit_or_loss;
 
-		// return (Double) (sub_profit - bc.Employee_cal( ManagerEmployeeId));
+		// return (Double) (sub_profit - bc.Employee_cal(leademployeeid));
+
+		// return 0.0;
 
 	}
+
 }

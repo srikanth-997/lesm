@@ -43,7 +43,7 @@ public class CountryHeadCalculation {
 	
 	
 	
-	public synchronized Double countryHeadCal(int CountryHead,LocalDate fromDate, LocalDate toDate)
+	public  Double countryHeadCal(int CountryHead,LocalDate fromDate, LocalDate toDate)
 	{
 
 		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository.findBymasterEmployeeDetails_Id(CountryHead);
@@ -57,19 +57,19 @@ public class CountryHeadCalculation {
 		
 		for (MasterEmployeeDetails Employeeid : ls) {
 
-			System.out.println(Employeeid);
+		//	System.out.println(Employeeid);
 
 
 			int a = Employeeid.getEmpId();
 			
-			 System.out.println("\nd an entering CH ...............\\n");
+			// System.out.println("\nd an entering CH ...............\\n");
 
 		//	profit_or_loss = Math.ceilvicePresidentCalculation.vicePresident(a,fromDate,toDate);
 			 
 			 
 			 profit_or_loss = Math.ceil(generalManagerCalculation.generalManagercal(a,fromDate,toDate));
 			
-			  System.out.println("\nd an leaving CH ...............\\n");
+			//  System.out.println("\nd an leaving CH ...............\\n");
 			sub_profit += profit_or_loss;
 
 		}

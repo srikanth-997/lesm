@@ -1,4 +1,5 @@
 package ls.lesm.service.impl;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,17 +13,21 @@ import ls.lesm.model.Sub_Profit;
 import ls.lesm.repository.InternalExpensesRepository;
 import ls.lesm.repository.MasterEmployeeDetailsRepository;
 import ls.lesm.repository.Sub_ProfitRepository;
-@Service
-public class GeneralManagerCalculation {
 
-	Long total=0l;
+@Service
+public class VicePresidentCalculation {
 	
+	
+Long total=0l;
+	
+	@Autowired
+	BusinessCalculation bc;
 	
 	@Autowired
 	MasterEmployeeDetailsRepository masterEmployeeDetailsRepository;
 	
 	@Autowired
-	ManagerCalculation managerCalculation;
+	GeneralManagerCalculation generalManagerCalculation;
 	
 	@Autowired
     InternalExpensesRepository internalExpensesrepo;
@@ -30,23 +35,25 @@ public class GeneralManagerCalculation {
     @Autowired
     Sub_ProfitRepository sub_ProfitRepository;
 	
-    @Autowired
-    CalculationsUptoDate bc;
 	
-	public synchronized Double generalManagercal(int GeneralManagerEmployeeId,LocalDate fromDate, LocalDate toDate)
+	
+	//public Double countryHeadCal(int CountryHead,LocalDate fromDate, LocalDate toDate)
+    public synchronized Double vicePresident(int vicepresidentval,LocalDate fromDate, LocalDate toDate)
 	{
 
-		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository.findBymasterEmployeeDetails_Id(GeneralManagerEmployeeId);
+		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository.findBymasterEmployeeDetails_Id(vicepresidentval);
 
 		Double profit_or_loss=0.0;
 		Double sub_profit=0.0;
 		
 		if(!ls.isEmpty())
 		{
+		
+		
 		for (MasterEmployeeDetails Employeeid : ls) {
 
 			System.out.println(Employeeid);
-
+//
 //			Optional<MasterEmployeeDetails> id = masterEmployeeDetailsRepository.findById(Employeeid.getEmpId());
 //
 //			MasterEmployeeDetails epm = null;
@@ -57,17 +64,17 @@ public class GeneralManagerCalculation {
 
 			int a = Employeeid.getEmpId();
 			
-			 System.out.println("\nd an entering GM ...............\\n");
+			// System.out.println("\nd an entering VP...............\\n ");
 
-			profit_or_loss = (Double)managerCalculation.manager_cal(a,fromDate,toDate);
+			profit_or_loss = Math.ceil(generalManagerCalculation.generalManagercal(a,fromDate,toDate));
 			
-			  System.out.println("\nd an leaving GM ...............\\n");
+			//  System.out.println("\nd an leaving VP...............\\n");
 			sub_profit += profit_or_loss;
 
 		}
 		}
 		
-		Optional<InternalExpenses> i = internalExpensesrepo.findBymasterEmployeeDetails_Id(GeneralManagerEmployeeId);
+		Optional<InternalExpenses> i = internalExpensesrepo.findBymasterEmployeeDetails_Id(vicepresidentval);
 
 		InternalExpenses o=null;
 		 if(i.isPresent())
@@ -79,21 +86,21 @@ public class GeneralManagerCalculation {
 		 }
 		 else
 		 {
-			o=internalExpensesrepo.save(new InternalExpenses(masterEmployeeDetailsRepository.findById(GeneralManagerEmployeeId).get()));
+			o=internalExpensesrepo.save(new InternalExpenses(masterEmployeeDetailsRepository.findById(vicepresidentval).get()));
 			 
 		 }
 
-        Double Total_profit_or_loss = sub_profit + bc.lesmCalculations(GeneralManagerEmployeeId,fromDate,toDate);
+        Double Total_profit_or_loss = sub_profit + bc.Employee_cal(vicepresidentval,fromDate,toDate);
 
         o.setProfitOrLoss(Math.ceil(Total_profit_or_loss));
 
         //
 
-        Optional<MasterEmployeeDetails> me = masterEmployeeDetailsRepository.findById(GeneralManagerEmployeeId);
+        Optional<MasterEmployeeDetails> me = masterEmployeeDetailsRepository.findById(vicepresidentval);
         MasterEmployeeDetails med = me.get();
 
 
-        Optional<Sub_Profit> s_p=sub_ProfitRepository.findBymasterEmployeeDetails_Id(GeneralManagerEmployeeId);
+        Optional<Sub_Profit> s_p=sub_ProfitRepository.findBymasterEmployeeDetails_Id(vicepresidentval);
 
         if(s_p.isPresent())
         {
@@ -110,22 +117,19 @@ public class GeneralManagerCalculation {
 
         Sub_Profit sp = new Sub_Profit(Math.ceil(sub_profit), med);
 
-        System.out.println(sp);
+      //  System.out.println(sp);
 
         sub_ProfitRepository.save(sp);
 
         }
-        
-        
-        
-        
-        
-        
-        
-        
         return Total_profit_or_loss;
-		//return (Double)(sub_profit - bc.Employee_cal(GeneralManagerEmployeeId));
+		
+		//return (Double)(sub_profit - bc.Employee_cal(CountryHead));
 
 
 	}
 }
+
+	
+
+

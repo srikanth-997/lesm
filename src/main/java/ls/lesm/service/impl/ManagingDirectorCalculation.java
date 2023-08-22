@@ -41,7 +41,7 @@ public class ManagingDirectorCalculation {
 	CalculationsUptoDate bc;
 
 	// @Scheduled(cron = "0 0 6 * * *")
-	public synchronized Double managingDirectorCal(int managingdirector, LocalDate fromDate, LocalDate toDate) {
+	public  Double managingDirectorCal(int managingdirector, LocalDate fromDate, LocalDate toDate) {
 
 		List<MasterEmployeeDetails> ls = masterEmployeeDetailsRepository
 				.findBymasterEmployeeDetails_Id(managingdirector);
@@ -53,7 +53,7 @@ public class ManagingDirectorCalculation {
 
 			for (MasterEmployeeDetails Employeeid : ls) {
 
-				System.out.println(Employeeid);
+				//System.out.println(Employeeid);
 
 				int a = Employeeid.getEmpId();
 
@@ -66,7 +66,7 @@ public class ManagingDirectorCalculation {
 
 				Matcher m = p.matcher(designationNameOfEmployee);
 
-				System.out.println(m.matches());
+				//System.out.println(m.matches());
 
 				if (m.matches()) {
 					sub_profit += bc.lesmCalculations(a, fromDate, toDate);
@@ -116,7 +116,7 @@ public class ManagingDirectorCalculation {
 
 			Sub_Profit sp = new Sub_Profit(Math.ceil(sub_profit), med);
 
-			System.out.println(sp);
+			//System.out.println(sp);
 
 			sub_ProfitRepository.save(sp);
 

@@ -67,6 +67,7 @@ public class CalculationsUptoDate {
 		double paid_till_now = 0l;
 		double remaining_days = 0;
 		double perday = 0;
+		long TotaldaysAll=0l;
 
 		int inc = 0;
 
@@ -94,7 +95,7 @@ public class CalculationsUptoDate {
 				fromDate = masterEmployeeDetailsRepo.findById(employeeId).get().getJoiningDate();
 
 			} catch (Exception joiningdate) {
-				System.err.println("Joining date not present");
+			//	System.err.println("Joining date not present");
 				return 0;
 
 			}
@@ -230,11 +231,11 @@ public class CalculationsUptoDate {
 						profit_or_los = Total_salary_from_client[0] - (paid_till_now + totalFinanceExp + 0.0);
 					}
 
-					System.out.println("EmpId" + employeeId);
-					System.out.println("salary Per Day:" + perday);
-					System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of days:" + TotalDays);
-					System.out.println("Pail Till Now" + paid_till_now);
-					System.out.println("Profit/Loss" + profit_or_los);
+//					System.out.println("EmpId" + employeeId);
+//					System.out.println("salary Per Day:" + perday);
+//					System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of days:" + TotalDays);
+//					System.out.println("Pail Till Now" + paid_till_now);
+//					System.out.println("Profit/Loss" + profit_or_los);
 					try {
 						expenses.setTotalExpenses(
 								Math.ceil(paid_till_now + allowancesOfEmployee(employeeId, TotalDays)));
@@ -310,7 +311,7 @@ public class CalculationsUptoDate {
 					continue;
 				}
 
-				System.out.println(Date2);
+				//System.out.println(Date2);
 
 				if (Date1.isBefore(toDate) && Date2.isAfter(fromDate)) {
 
@@ -331,6 +332,7 @@ public class CalculationsUptoDate {
 					TotalDays = ChronoUnit.DAYS.between(Date1, Date2);
 
 					Total_internal_tenure += tenure;
+					TotaldaysAll+=TotalDays;
 
 					double perdaysalary = tempsal / 30;
 
@@ -386,6 +388,7 @@ public class CalculationsUptoDate {
 				TotalDays = ChronoUnit.DAYS.between(Date1, Date2);
 
 				Total_internal_tenure += tenure;
+				TotaldaysAll+=TotalDays;
 
 				perday = tempsal / 30;
 
@@ -416,9 +419,9 @@ public class CalculationsUptoDate {
 					clientCalculation(employeeId, fromDate, toDate, Total_client_tenure, Total_salary_from_client,
 							Total_client_days);
 
-					long Bench_tenure = tenure - Total_client_tenure[0];
-
-					expenses.setBenchTenure(TotalDays);
+//					long Bench_tenure = tenure - Total_client_tenure[0];
+//
+//					expenses.setBenchTenure(TotalDays);
 
 					List<TotalFinanceExpenses> totalFinanceExpenses = totalFinanceExpensesRepository
 							.findBymasterEmployeeDetails_Id(employeeId);
@@ -429,21 +432,34 @@ public class CalculationsUptoDate {
 
 					}
 
-					expenses.setBR_INR(Total_salary_from_client[0]);
+					long Bench_tenure = tenure - Total_client_tenure[0];
+
+					expenses.setBenchTenure(TotaldaysAll);
+					long daysOnBench = TotaldaysAll - Total_client_days[0];
+				//	System.out.println(daysOnBench+" day son bench "+TotalDays+" Total days "+Total_client_days[0]+" client days ");
+					expenses.setDaysOnBench(-daysOnBench);
+					double benchpay = daysOnBench * perday;
+					expenses.setBenchPay(Math.ceil(-benchpay));
+
+					expenses.setBR_INR(Math.ceil(Total_salary_from_client[0]));
 
 					expenses.setBR_USD(Math.ceil(Total_salary_from_client[0] / 74));
 
-					expenses.setPR_INR(Math.ceil(Total_internal_pay));
+					expenses.setPR_INR(Math.ceil(paid_till_now));
 
-					expenses.setPR_USD(Math.ceil(Total_internal_pay / 74));
+					expenses.setPR_USD(Math.ceil(paid_till_now / 74));
 
-					expenses.setGPM_INR(Total_salary_from_client[0] - Math.ceil(Total_internal_pay));
+					expenses.setGPM_INR(Math.ceil(Total_salary_from_client[0] - paid_till_now));
 
-					long daysOnBench = Bench_tenure / 30;
+					expenses.setGPM_USD(Math.ceil((Total_salary_from_client[0] / 74 - (paid_till_now / 74))));
 
-					double benchpay = daysOnBench * perday;
-					expenses.setBenchPay(Math.ceil(benchpay));
+					expenses.setGM(Math.ceil(Total_salary_from_client[0] / paid_till_now));
 
+					
+				//	System.out.println(benchpay+" ...........................");
+				//	expenses.setBenchPay(Math.ceil(benchpay));
+					
+					
 					expenses.setGPM_USD(
 							(Math.ceil(Total_salary_from_client[0] / 74) - Math.ceil(Total_internal_pay / 74)));
 
@@ -457,11 +473,11 @@ public class CalculationsUptoDate {
 						profit_or_los = Total_salary_from_client[0] - (Total_internal_pay + totalFinanceExp + 0.0);
 					}
 
-					System.out.println("EmpId" + employeeId);
-					System.out.println("salary Per Day:" + perday);
-					System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of days:" + TotalDays);
+					//System.out.println("EmpId" + employeeId);
+					//System.out.println("salary Per Day:" + perday);
+					//System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of days:" + TotalDays);
 
-					System.out.println("Profit/Loss" + profit_or_los);
+				//	System.out.println("Profit/Loss" + profit_or_los);
 					try {
 						expenses.setTotalExpenses(
 								Math.ceil(Total_internal_pay + allowancesOfEmployee(employeeId, TotalDays)));
@@ -472,7 +488,7 @@ public class CalculationsUptoDate {
 
 				} catch (Exception e) {
 
-					System.err.println("TotalFinanceExpenses");
+				//	System.err.println("TotalFinanceExpenses");
 					return 0;
 				}
 
@@ -481,7 +497,7 @@ public class CalculationsUptoDate {
 			}
 
 		}
-		System.out.println("Total internal par" + Total_internal_pay);
+		//System.out.println("Total internal par" + Total_internal_pay);
 
 		return profit_or_los;
 
@@ -555,15 +571,15 @@ public class CalculationsUptoDate {
 
 					cl.setTotalEarningAtclient(Math.ceil((Bill_at_client)));
 
-					System.out.println("EmpId" + employeeId);
-
-					System.out.println("Salary" + salary);
-
-					System.out.println("salary Per Day:" + perday);
-
-					System.out.println("TillNowDays" + TillNowDays);
-
-					System.out.println("pay at client" + Bill_at_client);
+//					System.out.println("EmpId" + employeeId);
+//
+//					System.out.println("Salary" + salary);
+//
+//					System.out.println("salary Per Day:" + perday);
+//
+//					System.out.println("TillNowDays" + TillNowDays);
+//
+//					System.out.println("pay at client" + Bill_at_client);
 
 					cl.setClientTenure(TillNowDays);
 
@@ -655,6 +671,8 @@ public class CalculationsUptoDate {
 			}
 
 		}
+		
+	
 
 		return total;
 	}
