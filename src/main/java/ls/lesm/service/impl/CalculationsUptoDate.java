@@ -67,7 +67,7 @@ public class CalculationsUptoDate {
 		double paid_till_now = 0l;
 		double remaining_days = 0;
 		double perday = 0;
-		long TotaldaysAll=0l;
+		long TotaldaysAll = 0l;
 
 		int inc = 0;
 
@@ -95,7 +95,7 @@ public class CalculationsUptoDate {
 				fromDate = masterEmployeeDetailsRepo.findById(employeeId).get().getJoiningDate();
 
 			} catch (Exception joiningdate) {
-			//	System.err.println("Joining date not present");
+				// System.err.println("Joining date not present");
 				return 0;
 
 			}
@@ -311,7 +311,7 @@ public class CalculationsUptoDate {
 					continue;
 				}
 
-				//System.out.println(Date2);
+				// System.out.println(Date2);
 
 				if (Date1.isBefore(toDate) && Date2.isAfter(fromDate)) {
 
@@ -332,7 +332,7 @@ public class CalculationsUptoDate {
 					TotalDays = ChronoUnit.DAYS.between(Date1, Date2);
 
 					Total_internal_tenure += tenure;
-					TotaldaysAll+=TotalDays;
+					TotaldaysAll += TotalDays;
 
 					double perdaysalary = tempsal / 30;
 
@@ -388,7 +388,7 @@ public class CalculationsUptoDate {
 				TotalDays = ChronoUnit.DAYS.between(Date1, Date2);
 
 				Total_internal_tenure += tenure;
-				TotaldaysAll+=TotalDays;
+				TotaldaysAll += TotalDays;
 
 				perday = tempsal / 30;
 
@@ -436,10 +436,13 @@ public class CalculationsUptoDate {
 
 					expenses.setBenchTenure(TotaldaysAll);
 					long daysOnBench = TotaldaysAll - Total_client_days[0];
-				//	System.out.println(daysOnBench+" day son bench "+TotalDays+" Total days "+Total_client_days[0]+" client days ");
-					expenses.setDaysOnBench(-daysOnBench);
+					// System.out.println(daysOnBench+" day son bench "+TotalDays+" Total days
+					// "+Total_client_days[0]+" client days ");
+					expenses.setDaysOnBench(daysOnBench);
 					double benchpay = daysOnBench * perday;
-					expenses.setBenchPay(Math.ceil(-benchpay));
+					benchpay = Math.abs(benchpay);
+
+					expenses.setBenchPay(Math.ceil(benchpay));
 
 					expenses.setBR_INR(Math.ceil(Total_salary_from_client[0]));
 
@@ -455,11 +458,9 @@ public class CalculationsUptoDate {
 
 					expenses.setGM(Math.ceil(Total_salary_from_client[0] / paid_till_now));
 
-					
-				//	System.out.println(benchpay+" ...........................");
-				//	expenses.setBenchPay(Math.ceil(benchpay));
-					
-					
+					// System.out.println(benchpay+" ...........................");
+					// expenses.setBenchPay(Math.ceil(benchpay));
+
 					expenses.setGPM_USD(
 							(Math.ceil(Total_salary_from_client[0] / 74) - Math.ceil(Total_internal_pay / 74)));
 
@@ -467,17 +468,17 @@ public class CalculationsUptoDate {
 					try {
 						profit_or_los = Total_salary_from_client[0]
 								- (Total_internal_pay + totalFinanceExp + allowancesOfEmployee(employeeId, TotalDays));
-						
-						
+
 					} catch (Exception e) {
 						profit_or_los = Total_salary_from_client[0] - (Total_internal_pay + totalFinanceExp + 0.0);
 					}
 
-					//System.out.println("EmpId" + employeeId);
-					//System.out.println("salary Per Day:" + perday);
-					//System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of days:" + TotalDays);
+					// System.out.println("EmpId" + employeeId);
+					// System.out.println("salary Per Day:" + perday);
+					// System.out.println("Date-1" + Date1 + " Date-2" + Date2 + " Total number of
+					// days:" + TotalDays);
 
-				//	System.out.println("Profit/Loss" + profit_or_los);
+					// System.out.println("Profit/Loss" + profit_or_los);
 					try {
 						expenses.setTotalExpenses(
 								Math.ceil(Total_internal_pay + allowancesOfEmployee(employeeId, TotalDays)));
@@ -488,7 +489,7 @@ public class CalculationsUptoDate {
 
 				} catch (Exception e) {
 
-				//	System.err.println("TotalFinanceExpenses");
+					// System.err.println("TotalFinanceExpenses");
 					return 0;
 				}
 
@@ -497,7 +498,7 @@ public class CalculationsUptoDate {
 			}
 
 		}
-		//System.out.println("Total internal par" + Total_internal_pay);
+		// System.out.println("Total internal par" + Total_internal_pay);
 
 		return profit_or_los;
 
@@ -671,8 +672,6 @@ public class CalculationsUptoDate {
 			}
 
 		}
-		
-	
 
 		return total;
 	}
